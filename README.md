@@ -116,6 +116,16 @@ while (x < 10) {
 }
 ```
 
+### Repeat loops
+
+**Repeat loops are basically the same as "for i in range(X)" but just more consise**
+
+```java
+repeat(10) {
+  
+}
+```
+
 ## Changelog
 
 - **1.0**: Initial commit.
