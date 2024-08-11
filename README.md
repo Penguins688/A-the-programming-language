@@ -126,6 +126,11 @@ repeat(10) {
 }
 ```
 
+## Things to be added
+- **Syntax highlighting**: If someone could make a VScode extension for syntax highlighting it would be appreciated.
+- **Arrays**: Arrays are a much needed feature and would improve the language a lot.
+- **Templates**: Basically classes but with a unique name.
+
 ## Changelog
 
 - **1.0**: Initial commit.
