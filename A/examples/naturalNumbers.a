@@ -1,0 +1,15 @@
+var n = 10;
+
+function sum_of_natural_numbers = {
+    var sum = 0;
+    var i = 1;
+
+    while (i <= n) {
+        sum = sum + i;
+        i = i + 1;
+    }
+
+    print(sum);
+}
+
+sum_of_natural_numbers
