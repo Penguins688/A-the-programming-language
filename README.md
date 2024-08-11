@@ -43,6 +43,24 @@ print(3);
 print(3 + 5);
 ```
 
+### User input
+
+**To get user input you can use inputstr**
+
+```java
+print("enter your name");
+
+var x = inputstr;
+```
+
+**You can also use inputnum to get a number**
+
+```java
+print("enter a number");
+
+var x = inputnum;
+```
+
 ### Variables
 
 **Variables can be declared with the var keyword**
@@ -135,4 +153,5 @@ repeat(10) {
 
 - **1.0**: Initial commit.
 - **1.1**: Added repeat loop and fixed bugs with strings.
+- **1.2**: Added user input.
 
