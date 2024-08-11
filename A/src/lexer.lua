@@ -3,6 +3,7 @@ local tokenTypes = {
     ["var"] = "Var",
     ["if"] = "If",
     ["while"] = "While",
+    ["repeat"] = "Repeat",
     ["print"] = "Print",
     ["break"] = "Break",
     ["("] = "OpenParen",
