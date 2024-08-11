@@ -111,7 +111,7 @@ function compile(ast, show_output)
                 outfile:write("then\n")
                 tokenIndex = tokenIndex + 1
 
-            -- handle if
+            -- handle while
             elseif token.type == "While" then
                 outfile:write("while ")
                 tokenIndex = tokenIndex + 1
@@ -131,6 +131,28 @@ function compile(ast, show_output)
                     error("Error: Expected '{' after if condition on line " .. lineIndex)
                 end
                 outfile:write("do\n")
+                tokenIndex = tokenIndex + 1
+
+            --handle repeat loop
+            elseif token.type == "Repeat" then
+                tokenIndex = tokenIndex + 1
+                if tokenIndex > #line or line[tokenIndex].type ~= "OpenParen" then
+                    error("Error: Expected '(' after 'repeat' on line " .. lineIndex)
+                end
+                tokenIndex = tokenIndex + 1
+                if tokenIndex > #line or line[tokenIndex].type ~= "Number" then
+                    error("Error: Expected a number after '(' in 'repeat' on line " .. lineIndex)
+                end
+                local repeatCount = line[tokenIndex].value
+                tokenIndex = tokenIndex + 1
+                if tokenIndex > #line or line[tokenIndex].type ~= "CloseParen" then
+                    error("Error: Expected ')' after number in 'repeat' on line " .. lineIndex)
+                end
+                tokenIndex = tokenIndex + 1
+                if tokenIndex > #line or line[tokenIndex].type ~= "OpenBrace" then
+                    error("Error: Expected '{' after 'repeat' on line " .. lineIndex)
+                end
+                outfile:write("for i = 1, " .. repeatCount .. " do\n")
                 tokenIndex = tokenIndex + 1
                 
             -- handle OpenBrace (start of block)
@@ -166,7 +188,12 @@ function compile(ast, show_output)
                         end
                     end
                     
-                    table.insert(expression, line[tokenIndex].value)
+                    local tokenValue = line[tokenIndex].value
+                    if line[tokenIndex].type == "String" then
+                        tokenValue = '"' .. tokenValue .. '"'
+                    end
+                    
+                    table.insert(expression, tokenValue)
                     tokenIndex = tokenIndex + 1
                 end
                 
@@ -175,8 +202,7 @@ function compile(ast, show_output)
                 end
                 
                 outfile:write(table.concat(expression, " "))
-                outfile:write(")")
-                
+                outfile:write(")\n")
                 
             elseif line[tokenIndex].type == "Operator" then
                 outfile:write(line[tokenIndex].value)
