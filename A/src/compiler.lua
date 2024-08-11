@@ -56,10 +56,10 @@ function compile(ast, show_output)
                 if tokenIndex > 1 and (line[tokenIndex - 1].type == "Function" or line[tokenIndex - 1].type == "Var") then
                     outfile:write(token.value)
                 else
-                    if find_function(line[tokenIndex].value) then
-                        outfile:write(line[tokenIndex].value .. "()")
-                    elseif find_variable(line[tokenIndex].value) then
-                        outfile:write(line[tokenIndex].value)
+                    if find_function(token.value) then
+                        outfile:write(token.value .. "()")
+                    elseif find_variable(token.value) then
+                        outfile:write(token.value)
                     else
                         error("Error: incorrect identifier usage on line " .. lineIndex)
                     end
@@ -82,6 +82,11 @@ function compile(ast, show_output)
             -- handle number
             elseif token.type == "Number" then
                 outfile:write(token.value)
+                tokenIndex = tokenIndex + 1
+
+            --handle strings
+            elseif token.type == "String" then
+                outfile:write("\"" .. token.value .. "\"")
                 tokenIndex = tokenIndex + 1
                 
             -- handle if
