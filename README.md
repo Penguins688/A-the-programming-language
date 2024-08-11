@@ -1,5 +1,7 @@
 # The A programming language
 
+## Requirements
+
 - **Lua**: This project was made with Lua 5.4.7.
 
 ## Compiling
@@ -113,3 +115,9 @@ while (x < 10) {
   x = x + 1;
 }
 ```
+
+## Changelog
+
+- **1.0**: Initial commit.
+- **1.1**: Added repeat loop and fixed bugs with strings.
+
