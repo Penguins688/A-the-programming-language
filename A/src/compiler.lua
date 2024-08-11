@@ -163,6 +163,16 @@ function compile(ast, show_output)
             elseif token.type == "CloseBrace" then
                 outfile:write("end\n")
                 tokenIndex = tokenIndex + 1
+            
+            --handle input number
+            elseif token.type == "InputNum" then
+                outfile:write("tonumber(io.read())")
+                tokenIndex = tokenIndex + 1
+
+            --handle input string
+            elseif token.type == "InputStr" then
+                outfile:write("io.read()")
+                tokenIndex = tokenIndex + 1
                 
             --handle print    
             elseif token.type == "Print" then
