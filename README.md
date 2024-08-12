@@ -22,7 +22,7 @@ lua a.lua <.a filepath> --debug
 
 ### Comments
 
-**Only single line comments**
+**Only single line comments are supported**
 
 ```javascript
 // This is a comment
