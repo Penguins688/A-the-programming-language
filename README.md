@@ -84,6 +84,29 @@ var x = 3;
 var x = "hello";
 ```
 
+### Lists
+
+**Lists are basically arrays**
+**To make a new list use the list key word**
+
+```java
+list example 3, 6, 7, "hi", 2;
+```
+
+**To access an item in a list use []**
+
+```java
+list example 3, 6, 7, "hi", 2;
+print(example[1]);
+//this prints 3 because lists have 1-based indexing
+```
+
+**To get the length of an array use #**
+```java
+list example 3, 6, 7, "hi", 2;
+print(#example);
+```
+
 ### Functions
 
 **Functions are like the syntax in Javascript except with a few changes**
@@ -155,7 +178,6 @@ repeat(10) {
 
 ## Things to be added
 - **Syntax highlighting**: If someone could make a VScode extension for syntax highlighting it would be appreciated.
-- **Arrays**: Arrays are a much needed feature and would improve the language a lot.
 - **Templates**: Basically classes but with a unique name.
 
 ## Changelog
@@ -164,4 +186,5 @@ repeat(10) {
 - **1.1**: Added repeat loop and fixed bugs with strings.
 - **1.2**: Added user input.
 - **1.3**: Added comments.
+- **1.4**: Added lists.
 
