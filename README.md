@@ -20,6 +20,15 @@ lua a.lua <.a filepath> --debug
 
 ## Syntax
 
+### Comments
+
+**Only single line comments**
+
+```javascript
+// This is a comment
+// This is another comment
+```
+
 ### Printing
 
 **The print function is exactly like python but with a semi-colon**
@@ -154,4 +163,5 @@ repeat(10) {
 - **1.0**: Initial commit.
 - **1.1**: Added repeat loop and fixed bugs with strings.
 - **1.2**: Added user input.
+- **1.3**: Added comments.
 
