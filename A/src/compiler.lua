@@ -1,5 +1,6 @@
 local functions = {}
 local variables = {}
+local lists = {}
 
 local function find_variable(name)
     for _, variable in ipairs(variables) do
@@ -13,6 +14,15 @@ end
 local function find_function(name)
     for _, function_name in ipairs(functions) do
         if function_name == name then
+            return true
+        end
+    end
+    return false
+end
+
+local function find_list(name)
+    for _, list_name in ipairs(lists) do
+        if list_name == name then
             return true
         end
     end
@@ -48,17 +58,51 @@ function compile(ast, show_output)
                     table.insert(variables, line[tokenIndex + 1].value)
                     tokenIndex = tokenIndex + 2
                 else
-                    error("Error: incorrect variable assignment on line " .. lineIndex) 
+                    error("Error: incorrect variable assignment on line " .. lineIndex)
+                end
+            
+            -- handle lists
+            elseif token.type == "List" then
+                if tokenIndex + 1 <= #line and line[tokenIndex + 1].type == "Identifier" then
+                    outfile:write("local " .. line[tokenIndex + 1].value .. " = {")
+                    table.insert(lists, line[tokenIndex + 1].value)
+                    tokenIndex = tokenIndex + 2
+                    local firstElement = true
+                    while tokenIndex <= #line and line[tokenIndex].type ~= "SemiColon" do
+                        if line[tokenIndex].type == "Number" or line[tokenIndex].type == "String" or line[tokenIndex].type == "Operator" or line[tokenIndex].type == "Comma" then
+                            if firstElement and line[tokenIndex].type == "Comma" then
+                                error("Error: Unexpected comma at the start of the list on line " .. lineIndex)
+                            end
+                            if line[tokenIndex].type == "String" then
+                                outfile:write("\"" .. line[tokenIndex].value .. "\"")
+                            elseif line[tokenIndex].type == "Number" then
+                                outfile:write(line[tokenIndex].value)
+                            elseif line[tokenIndex].type == "Operator" then
+                                outfile:write(line[tokenIndex].value)
+                            elseif line[tokenIndex].type == "Comma" then
+                                outfile:write(",")
+                            end
+                            firstElement = false
+                            tokenIndex = tokenIndex + 1
+                        else
+                            error("Error: Unexpected token type " .. line[tokenIndex].type .. " in list on line " .. lineIndex)
+                        end
+                    end
+                    outfile:write("}\n")
+                else
+                    error("Error: incorrect list assignment on line " .. lineIndex)
                 end
             
             -- handle identifiers
             elseif token.type == "Identifier" then
-                if tokenIndex > 1 and (line[tokenIndex - 1].type == "Function" or line[tokenIndex - 1].type == "Var") then
+                if tokenIndex > 1 and (line[tokenIndex - 1].type == "Function" or line[tokenIndex - 1].type == "Var" or line[tokenIndex - 1].type == "List") then
                     outfile:write(token.value)
                 else
                     if find_function(token.value) then
                         outfile:write(token.value .. "()")
                     elseif find_variable(token.value) then
+                        outfile:write(token.value)
+                    elseif find_list(token.value) then
                         outfile:write(token.value)
                     else
                         error("Error: incorrect identifier usage on line " .. lineIndex)
@@ -71,8 +115,10 @@ function compile(ast, show_output)
                 if tokenIndex > 1 and line[tokenIndex - 1].type == "Identifier" then
                     if tokenIndex > 2 and line[tokenIndex - 2].type == "Function" then
                         outfile:write("")
+                    elseif tokenIndex > 2 and line[tokenIndex - 2].type == "Var" then
+                        outfile:write("= ")
                     else
-                        outfile:write("= ") 
+                        outfile:write("=")
                     end
                 else
                     error("Error: incorrect variable assignment on line " .. lineIndex)
@@ -84,7 +130,7 @@ function compile(ast, show_output)
                 outfile:write(token.value)
                 tokenIndex = tokenIndex + 1
 
-            --handle strings
+            -- handle strings
             elseif token.type == "String" then
                 outfile:write("\"" .. token.value .. "\"")
                 tokenIndex = tokenIndex + 1
@@ -98,7 +144,11 @@ function compile(ast, show_output)
                 end
                 tokenIndex = tokenIndex + 1
                 while tokenIndex <= #line and line[tokenIndex].type ~= "CloseParen" do
-                    outfile:write(line[tokenIndex].value .. " ")
+                    if line[tokenIndex].type == "String" then
+                        outfile:write("\"" .. line[tokenIndex].value .. "\" ")
+                    else
+                        outfile:write(line[tokenIndex].value .. " ")
+                    end
                     tokenIndex = tokenIndex + 1
                 end
                 if tokenIndex > #line or line[tokenIndex].type ~= "CloseParen" then
@@ -116,65 +166,81 @@ function compile(ast, show_output)
                 outfile:write("while ")
                 tokenIndex = tokenIndex + 1
                 if line[tokenIndex].type ~= "OpenParen" then
-                    error("Error: Expected '(' after 'if' on line " .. lineIndex)
+                    error("Error: Expected '(' after 'while' on line " .. lineIndex)
                 end
                 tokenIndex = tokenIndex + 1
                 while tokenIndex <= #line and line[tokenIndex].type ~= "CloseParen" do
-                    outfile:write(line[tokenIndex].value .. " ")
+                    if line[tokenIndex].type == "String" then
+                        outfile:write("\"" .. line[tokenIndex].value .. "\" ")
+                    else
+                        outfile:write(line[tokenIndex].value .. " ")
+                    end
                     tokenIndex = tokenIndex + 1
                 end
                 if tokenIndex > #line or line[tokenIndex].type ~= "CloseParen" then
-                    error("Error: Expected ')' after condition in if statement on line " .. lineIndex)
+                    error("Error: Expected ')' after condition in while statement on line " .. lineIndex)
                 end
                 tokenIndex = tokenIndex + 1
                 if tokenIndex > #line or line[tokenIndex].type ~= "OpenBrace" then
-                    error("Error: Expected '{' after if condition on line " .. lineIndex)
+                    error("Error: Expected '{' after while condition on line " .. lineIndex)
                 end
                 outfile:write("do\n")
                 tokenIndex = tokenIndex + 1
 
-            --handle repeat loop
+            -- handle repeat loop
             elseif token.type == "Repeat" then
                 tokenIndex = tokenIndex + 1
+                local repeatCount = ""
                 if tokenIndex > #line or line[tokenIndex].type ~= "OpenParen" then
                     error("Error: Expected '(' after 'repeat' on line " .. lineIndex)
                 end
                 tokenIndex = tokenIndex + 1
-                if tokenIndex > #line or line[tokenIndex].type ~= "Number" then
-                    error("Error: Expected a number after '(' in 'repeat' on line " .. lineIndex)
+                while tokenIndex <= #line and line[tokenIndex].type ~= "CloseParen" do
+                    if line[tokenIndex].type == "String" then
+                        error("Error: Expected a number after '(' in 'repeat' on line " .. lineIndex)
+                    end
+                    repeatCount = repeatCount .. " " .. line[tokenIndex].value
+                    tokenIndex = tokenIndex + 1
                 end
-                local repeatCount = line[tokenIndex].value
                 tokenIndex = tokenIndex + 1
-                if tokenIndex > #line or line[tokenIndex].type ~= "CloseParen" then
-                    error("Error: Expected ')' after number in 'repeat' on line " .. lineIndex)
-                end
-                tokenIndex = tokenIndex + 1
-                if tokenIndex > #line or line[tokenIndex].type ~= "OpenBrace" then
-                    error("Error: Expected '{' after 'repeat' on line " .. lineIndex)
-                end
                 outfile:write("for i = 1, " .. repeatCount .. " do\n")
                 tokenIndex = tokenIndex + 1
+
+            -- handle #
+            elseif token.type == "Length" then
+                outfile:write("#")
+                tokenIndex = tokenIndex + 1
                 
-            -- handle OpenBrace (start of block)
+            -- handle {
             elseif token.type == "OpenBrace" then
                 tokenIndex = tokenIndex + 1
                 
-            -- handle CloseBrace (end of block)
+            -- handle }
             elseif token.type == "CloseBrace" then
                 outfile:write("end\n")
                 tokenIndex = tokenIndex + 1
+
+            -- handle [
+            elseif token.type == "OpenSquare" then
+                outfile:write("[")
+                tokenIndex = tokenIndex + 1
             
-            --handle input number
+            -- handle ]
+            elseif token.type == "CloseSquare" then
+                outfile:write("]")
+                tokenIndex = tokenIndex + 1
+            
+            -- handle input number
             elseif token.type == "InputNum" then
                 outfile:write("tonumber(io.read())")
                 tokenIndex = tokenIndex + 1
 
-            --handle input string
+            -- handle input string
             elseif token.type == "InputStr" then
                 outfile:write("io.read()")
                 tokenIndex = tokenIndex + 1
-                
-            --handle print    
+
+            -- handle print
             elseif token.type == "Print" then
                 outfile:write("print(")
                 tokenIndex = tokenIndex + 1
@@ -224,12 +290,10 @@ function compile(ast, show_output)
                 tokenIndex = tokenIndex + 1 
             end
         end
+        if show_output == false then
+            outfile:write("\nos.remove('out.lua')")
+        end
     end
-    if show_output == false then
-        outfile:write("\nos.remove('out.lua')")
-    else
-
-    end 
     outfile:close()
     os.execute("lua out.lua")
 end
