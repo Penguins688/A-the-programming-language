@@ -1,6 +1,7 @@
 local tokenTypes = {
     ["function"] = "Function",
     ["var"] = "Var",
+    ["var[]"] = "List",
     ["if"] = "If",
     ["while"] = "While",
     ["repeat"] = "Repeat",
@@ -12,6 +13,8 @@ local tokenTypes = {
     [")"] = "CloseParen",
     ["{"] = "OpenBrace",
     ["}"] = "CloseBrace",
+    ["["] = "OpenSquare",
+    ["]"] = "CloseSquare",
     ["=="] = "Equal",
     ["!="] = "NotEqual",
     ["<"] = "LessThan",
@@ -48,7 +51,19 @@ local function read(file)
         local i = 1
         while i <= #line do
             local char = line:sub(i, i)
-            if char:match("%s") then
+            
+            if char == '/' and line:sub(i+1, i+1) == '/' then
+                break 
+            elseif char == '/' and line:sub(i+1, i+1) == '*' then
+                i = i + 2
+                while i <= #line do
+                    if line:sub(i, i+1) == '*/' then
+                        i = i + 2
+                        break
+                    end
+                    i = i + 1
+                end
+            elseif char:match("%s") then
                 i = i + 1
             elseif char == '"' then
                 local str = '"'
@@ -60,8 +75,6 @@ local function read(file)
                 str = str .. '"'
                 table.insert(lineArr, {type = "String", value = str})
                 i = i + 1
-            elseif char == '/' and line:sub(i+1, i+1) == '/' then
-                break
             elseif char:match("%d") then
                 local number = char
                 i = i + 1
