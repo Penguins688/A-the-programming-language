@@ -1,7 +1,7 @@
 local tokenTypes = {
     ["function"] = "Function",
     ["var"] = "Var",
-    ["var[]"] = "List",
+    ["list"] = "List",
     ["if"] = "If",
     ["while"] = "While",
     ["repeat"] = "Repeat",
@@ -9,12 +9,14 @@ local tokenTypes = {
     ["inputnum"] = "InputNum",
     ["inputstr"] = "InputStr",
     ["break"] = "Break",
+    ["#"] = "Length",
     ["("] = "OpenParen",
     [")"] = "CloseParen",
     ["{"] = "OpenBrace",
     ["}"] = "CloseBrace",
     ["["] = "OpenSquare",
     ["]"] = "CloseSquare",
+    [","] = "Comma",
     ["=="] = "Equal",
     ["!="] = "NotEqual",
     ["<"] = "LessThan",
@@ -54,15 +56,6 @@ local function read(file)
             
             if char == '/' and line:sub(i+1, i+1) == '/' then
                 break 
-            elseif char == '/' and line:sub(i+1, i+1) == '*' then
-                i = i + 2
-                while i <= #line do
-                    if line:sub(i, i+1) == '*/' then
-                        i = i + 2
-                        break
-                    end
-                    i = i + 1
-                end
             elseif char:match("%s") then
                 i = i + 1
             elseif char == '"' then
