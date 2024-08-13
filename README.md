@@ -37,13 +37,19 @@ lua a.lua <.a filepath> --debug
 print("hello guys");
 ```
 
-**There is no concatenation but you can print variables and numbers**
+**You can also print variables and numbers**
 
 ```java
 var x = "hi";
 
 print(x);
 print(3);
+```
+
+**String concatenation is exactly like lua's syntax**
+
+```lua
+print("hello " .. "guys");
 ```
 
 **Expressions are also supported**
@@ -87,6 +93,7 @@ var x = "hello";
 ### Lists
 
 **Lists are basically arrays**
+<br>
 **To make a new list use the list key word**
 
 ```java
@@ -101,10 +108,23 @@ print(example[1]);
 //this prints 3 because lists have 1-based indexing
 ```
 
+**You can also edit an element**
+```java
+list example 3, 6, 7, "hi", 2;
+example[1] = 2;
+```
+
 **To get the length of an array use #**
 ```java
 list example 3, 6, 7, "hi", 2;
 print(#example);
+```
+
+**To append to an array use the add keyword**
+```java
+list example 3, 6, 7, "hi", 2;
+example add 3
+//adds 3 to the end of the array
 ```
 
 ### Functions
@@ -187,4 +207,4 @@ repeat(10) {
 - **1.2**: Added user input.
 - **1.3**: Added comments.
 - **1.4**: Added lists.
-
+- **1.5**: Improved list functionality and added string concatenation.
