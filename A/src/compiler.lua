@@ -93,7 +93,7 @@ function compile(ast, show_output)
                     error("Error: incorrect list assignment on line " .. lineIndex)
                 end
             
-            -- handle identifiers
+            --handle lists
             elseif token.type == "Identifier" then
                 if tokenIndex > 1 and (line[tokenIndex - 1].type == "Function" or line[tokenIndex - 1].type == "Var" or line[tokenIndex - 1].type == "List") then
                     outfile:write(token.value)
@@ -103,7 +103,11 @@ function compile(ast, show_output)
                     elseif find_variable(token.value) then
                         outfile:write(token.value)
                     elseif find_list(token.value) then
-                        outfile:write(token.value)
+                        if tokenIndex < #line and line[tokenIndex + 1].type == "Append" then
+
+                        else
+                            outfile:write(token.value)
+                        end
                     else
                         error("Error: incorrect identifier usage on line " .. lineIndex)
                     end
@@ -121,7 +125,11 @@ function compile(ast, show_output)
                         outfile:write("=")
                     end
                 else
-                    error("Error: incorrect variable assignment on line " .. lineIndex)
+                    if line[tokenIndex - 1].type == "CloseSquare" then
+                        outfile:write("=")
+                    else
+                        error("Error: incorrect variable assignment on line " .. lineIndex)
+                    end
                 end
                 tokenIndex = tokenIndex + 1
                 
@@ -206,6 +214,30 @@ function compile(ast, show_output)
                 outfile:write("for i = 1, " .. repeatCount .. " do\n")
                 tokenIndex = tokenIndex + 1
 
+            -- handle add
+            elseif token.type == "Append" then
+                if tokenIndex > 1 and line[tokenIndex - 1].type == "Identifier" then
+                    if find_list(line[tokenIndex - 1].value) then
+                        local list = line[tokenIndex - 1].value
+                        tokenIndex = tokenIndex + 1 
+                        local addition = ""
+                        while tokenIndex <= #line and line[tokenIndex].type ~= "SemiColon" do
+                            if line[tokenIndex].type == "String" then
+                                addition = addition .. "\"" .. line[tokenIndex].value .. "\""
+                            else
+                                addition = addition .. line[tokenIndex].value
+                            end
+                            tokenIndex = tokenIndex + 1
+                        end
+                        outfile:write("table.insert(" .. list .. ", " .. addition .. ")")
+                    else
+                        error("Error: Expected list before add on line " .. lineIndex) 
+                    end
+                else
+                    error("Error: Expected list before add on line " .. lineIndex)
+                end
+
+
             -- handle #
             elseif token.type == "Length" then
                 outfile:write("#")
@@ -228,6 +260,11 @@ function compile(ast, show_output)
             -- handle ]
             elseif token.type == "CloseSquare" then
                 outfile:write("]")
+                tokenIndex = tokenIndex + 1
+            
+            -- handle ..
+            elseif token.type == "Concatenate" then
+                outfile:write("..")
                 tokenIndex = tokenIndex + 1
             
             -- handle input number
