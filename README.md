@@ -48,7 +48,7 @@ print(3);
 
 **String concatenation is exactly like lua's syntax**
 
-```lua
+```java
 print("hello " .. "guys");
 ```
 
