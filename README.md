@@ -240,4 +240,4 @@ forever {
 - **1.3**: Added comments.
 - **1.4**: Added lists.
 - **1.5**: Improved list functionality and added string concatenation.
-- **1.6**: Added repeat loops, forever loops, and the random function.
+- **1.6**: Added repeat until loops, forever loops, and the random function.
