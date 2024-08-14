@@ -76,6 +76,19 @@ print("enter a number");
 var x = inputnum;
 ```
 
+### Random
+
+**This is basically math.random**
+
+```java
+random();
+```
+
+**You can also provide a range**
+```
+random(1, 10);
+```
+
 ### Variables
 
 **Variables can be declared with the var keyword**
@@ -196,6 +209,25 @@ repeat(10) {
 }
 ```
 
+### Repeat until loops
+
+**These are basically the opposite of while loops**
+```java
+repeat_until (1 == 1) {
+
+}
+```
+
+### Forever loops
+
+**This is a loop that continues forever**
+
+```java
+forever {
+
+}
+```
+
 ## Things to be added
 - **Syntax highlighting**: If someone could make a VScode extension for syntax highlighting it would be appreciated.
 - **Templates**: Basically classes but with a unique name.
@@ -208,3 +240,4 @@ repeat(10) {
 - **1.3**: Added comments.
 - **1.4**: Added lists.
 - **1.5**: Improved list functionality and added string concatenation.
+- **1.6**: Added repeat loops, forever loops, and the random function.
