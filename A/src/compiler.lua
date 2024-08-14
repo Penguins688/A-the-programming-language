@@ -194,6 +194,36 @@ function compile(ast, show_output)
                 end
                 outfile:write("do\n")
                 tokenIndex = tokenIndex + 1
+            
+            -- handle repeat until
+            elseif token.type == "RepeatUntil" then
+                outfile:write("while true do\n")
+                outfile:write("if ")
+                tokenIndex = tokenIndex + 1
+                if line[tokenIndex].type ~= "OpenParen" then
+                    error("Error: Expected '(' after 'while' on line " .. lineIndex)
+                end
+                tokenIndex = tokenIndex + 1
+                while tokenIndex <= #line and line[tokenIndex].type ~= "CloseParen" do
+                    if line[tokenIndex].type == "String" then
+                        outfile:write("\"" .. line[tokenIndex].value .. "\" ")
+                    else
+                        outfile:write(line[tokenIndex].value .. " ")
+                    end
+                    tokenIndex = tokenIndex + 1
+                end
+                if tokenIndex > #line or line[tokenIndex].type ~= "CloseParen" then
+                    error("Error: Expected ')' after condition in while statement on line " .. lineIndex)
+                end
+                tokenIndex = tokenIndex + 1
+                if tokenIndex > #line or line[tokenIndex].type ~= "OpenBrace" then
+                    error("Error: Expected '{' after while condition on line " .. lineIndex)
+                end
+                outfile:write("then\n")
+                outfile:write("break\n")
+                outfile:write("end\n")
+                tokenIndex = tokenIndex + 1
+
 
             -- handle repeat loop
             elseif token.type == "Repeat" then
@@ -212,6 +242,11 @@ function compile(ast, show_output)
                 end
                 tokenIndex = tokenIndex + 1
                 outfile:write("for i = 1, " .. repeatCount .. " do\n")
+                tokenIndex = tokenIndex + 1
+            
+            -- handle forever loop
+            elseif token.type == "Forever" then
+                outfile:write("while true do\n")
                 tokenIndex = tokenIndex + 1
 
             -- handle add
@@ -237,6 +272,19 @@ function compile(ast, show_output)
                     error("Error: Expected list before add on line " .. lineIndex)
                 end
 
+            elseif token.type == "Random" then
+                outfile:write("math.random(")
+                tokenIndex = tokenIndex + 2
+                while tokenIndex <= #line and line[tokenIndex].type ~= "CloseParen" do
+                    if line[tokenIndex].type == "String" then
+                        error("Error: expected number value on line " .. lineIndex)
+                    else
+                        outfile:write(line[tokenIndex].value)
+                    end
+                    tokenIndex = tokenIndex + 1
+                end
+                outfile:write(")")
+                tokenIndex = tokenIndex + 1 
 
             -- handle #
             elseif token.type == "Length" then
