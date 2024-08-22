@@ -142,7 +142,7 @@ print(#example);
 **To append to an array use the add keyword**
 ```java
 list example 3, 6, 7, "hi", 2;
-example add 3
+example add 3;
 //adds 3 to the end of the array
 ```
 
