@@ -18,6 +18,12 @@ lua a.lua <.a filepath>
 lua a.lua <.a filepath> --debug
 ```
 
+**To view the ast run:**
+
+```console
+lua a.lua <.a filepath> --ast
+```
+
 ## Syntax
 
 ### Comments
