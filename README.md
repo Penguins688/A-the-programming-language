@@ -91,7 +91,7 @@ random();
 ```
 
 **You can also provide a range**
-```
+```java
 random(1, 10);
 ```
 
