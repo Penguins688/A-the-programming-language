@@ -170,7 +170,7 @@ example;
 
 ### If conditions
 
-**If conditions have basically the same syntax as Javascrip except without the weird triple equals**
+**If conditions have basically the same syntax as Javascript except without the weird triple equals**
 
 ```java
 if (1 == 1) {
