@@ -111,7 +111,7 @@ var x = "hello";
 
 ### Lists
 
-**Lists are basically arrays**
+**Lists are basically lists**
 <br>
 **To make a new list use the list key word**
 
@@ -133,17 +133,17 @@ list example 3, 6, 7, "hi", 2;
 example[1] = 2;
 ```
 
-**To get the length of an array use #**
+**To get the length of an list use #**
 ```java
 list example 3, 6, 7, "hi", 2;
 print(#example);
 ```
 
-**To append to an array use the add keyword**
+**To append to an list use the add keyword**
 ```java
 list example 3, 6, 7, "hi", 2;
 example add 3;
-//adds 3 to the end of the array
+//adds 3 to the end of the list
 ```
 
 ### Functions
