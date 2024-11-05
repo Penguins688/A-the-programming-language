@@ -4,15 +4,15 @@
 
 - **Lua**: This project was made with Lua 5.4.7.
 
-## Compiling
+## Transpiling
 
-**To compile without showing the compiled output run:**
+**To transpile without showing the transpiled output run:**
 
 ```console
 lua a.lua <.a filepath>
 ```
 
-**To see the compiled output run:**
+**To see the transpiled output run:**
 
 ```console
 lua a.lua <.a filepath> --debug
